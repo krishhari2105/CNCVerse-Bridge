@@ -118,11 +118,9 @@ actual class PluginLoader(private val context: Context) {
                         StremioServer.loadedApis.add(MetadataOnlyWrapper(data))
                         return data.toLoadedPluginInfo(apiRegistered = false)
                     }
-                    java.nio.file.Files.copy(
-                        zip.getInputStream(dexEntry),
-                        dexFile.toPath(),
-                        java.nio.file.StandardCopyOption.REPLACE_EXISTING
-                    )
+                    // dex may be read-only from a previous load; remove it first
+                    if (dexFile.exists()) dexFile.delete()
+                    zip.getInputStream(dexEntry).use { com.cncverse.stremiobridge.util.copyReplacing(it, dexFile) }
                 }
             }
 

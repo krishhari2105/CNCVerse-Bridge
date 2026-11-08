@@ -297,10 +297,7 @@ object StreamTracker {
         runCatching {
             val tmp = File(f.parentFile, f.name + ".tmp")
             tmp.writeText(json.encodeToString(records))
-            java.nio.file.Files.move(
-                tmp.toPath(), f.toPath(),
-                java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE,
-            )
+            com.cncverse.stremiobridge.util.moveReplacing(tmp, f)
         }.onFailure { ServerState.warn("Could not save stream_health.json: ${it.message}") }
     }
 }

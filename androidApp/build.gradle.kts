@@ -41,6 +41,19 @@ kotlin {
     }
 }
 
+// Jackson 2.14+ references java.lang.BootstrapMethodError (and other API 26+ classes),
+// so ObjectMapper fails to initialise on Android 7.x and below, which breaks every
+// CloudStream plugin (MainAPIKt.mapper). 2.13.x is the last line that supports
+// minSdk 21, and it is what CloudStream itself ships. Desktop keeps libs.versions.jackson.
+configurations.all {
+    resolutionStrategy.eachDependency {
+        if (requested.group.startsWith("com.fasterxml.jackson")) {
+            useVersion("2.13.5")
+            because("Jackson >= 2.14 crashes on Android < 8 (API 26)")
+        }
+    }
+}
+
 android {
     namespace = "com.cncverse.stremiobridge.android"
     compileSdk = 35

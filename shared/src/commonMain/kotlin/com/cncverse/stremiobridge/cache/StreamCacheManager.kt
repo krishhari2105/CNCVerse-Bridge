@@ -525,11 +525,7 @@ object StreamCacheManager {
                 .map { e -> if (e.streams.any { it.info != null }) e.copy(infos = e.streams.map { it.info }) else e }
             val tmp = File(file.parentFile, "${file.name}.tmp")
             tmp.outputStream().buffered().use { cacheJson.encodeToStream(active, it) }
-            java.nio.file.Files.move(
-                tmp.toPath(), file.toPath(),
-                java.nio.file.StandardCopyOption.REPLACE_EXISTING,
-                java.nio.file.StandardCopyOption.ATOMIC_MOVE,
-            )
+            com.cncverse.stremiobridge.util.moveReplacing(tmp, file)
         } catch (e: Throwable) {
             ServerState.warn("Failed to save stream_cache.json: ${e.message}")
         }

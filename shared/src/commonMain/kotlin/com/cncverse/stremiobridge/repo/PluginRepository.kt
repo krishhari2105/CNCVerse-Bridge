@@ -217,12 +217,7 @@ object PluginRepository {
                     // Verified bytes → temp file → rename: the plugin file is never half-written
                     val tmp = File(dir, "$fileName.part")
                     tmp.writeBytes(bytes)
-                    try {
-                        java.nio.file.Files.move(tmp.toPath(), destFile.toPath(),
-                            java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE)
-                    } catch (_: java.nio.file.AtomicMoveNotSupportedException) {
-                        java.nio.file.Files.move(tmp.toPath(), destFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
-                    }
+                    com.cncverse.stremiobridge.util.moveReplacing(tmp, destFile)
                     ServerState.info("Downloaded '${plugin.name}' (${bytes.size / 1024} KB)")
                     return@withContext destFile
                 } catch (e: Exception) {
